@@ -84,14 +84,36 @@ export default function Home() {
           </div>
 
           {/* 행사 정보 */}
-          <div className="bg-slate-50 rounded-lg p-4 mb-8 space-y-2">
-            <div className="flex items-start gap-3">
-              <span className="text-slate-500 font-medium min-w-fit">📅 날짜:</span>
-              <span className="text-slate-700">2025년 12월 24일</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-slate-500 font-medium min-w-fit">📍 장소:</span>
-              <span className="text-slate-700">강남역 오리엔탈라운지</span>
+          <div className="relative bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-xl p-[2px] mb-8 overflow-hidden">
+            {/* 애니메이션 효과 */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+
+            <div className="relative bg-white rounded-xl p-6 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-2xl shadow-lg">
+                  📅
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">날짜</div>
+                  <div className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    2025년 12월 24일
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-pink-500 to-orange-400 rounded-lg flex items-center justify-center text-2xl shadow-lg">
+                  📍
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">장소</div>
+                  <div className="text-lg font-bold bg-gradient-to-r from-pink-600 to-orange-600 bg-clip-text text-transparent">
+                    강남역 오리엔탈라운지
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
