@@ -22,12 +22,13 @@ export async function registerEvent(name: string, mobile: string, email: string)
       [name, mobile, email]
     )
     return { success: true, data: result.rows[0] }
-  } catch (error: any) {
+  } catch (error) {
     // 이메일 중복 에러 처리
-    if (error.code === '23505') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
       return { success: false, error: '이미 등록된 이메일입니다.' }
     }
-    return { success: false, error: error.message }
+    const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+    return { success: false, error: message }
   }
 }
 
@@ -38,7 +39,8 @@ export async function getAllRegistrations() {
   try {
     const result = await pool.query('SELECT * FROM event_registrations ORDER BY created_at DESC')
     return { success: true, data: result.rows }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+    return { success: false, error: message }
   }
 }

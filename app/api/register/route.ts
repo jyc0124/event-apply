@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
       { error: '서버 오류가 발생했습니다.' },
