@@ -1,103 +1,172 @@
-import Image from "next/image";
+'use client'
 
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card } from '@/components/ui/card'
+import { toast } from 'sonner'
+
+/**
+ * 이벤트 참여 신청 페이지
+ * 사용자로부터 이름, 휴대폰 번호, 이메일을 받아 DB에 저장
+ */
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  // 폼 데이터 상태 관리
+  const [formData, setFormData] = useState({
+    name: '',
+    mobile: '',
+    email: '',
+  })
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // 로딩 상태 관리
+  const [isLoading, setIsLoading] = useState(false)
+
+  /**
+   * 입력 필드 변경 핸들러
+   */
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  /**
+   * 폼 제출 핸들러
+   * API에 데이터를 전송하고 응답 처리
+   */
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      // API 호출
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // 성공 메시지 표시
+        toast.success('신청이 완료되었습니다!')
+        // 폼 초기화
+        setFormData({ name: '', mobile: '', email: '' })
+      } else {
+        // 에러 메시지 표시
+        toast.error(data.error || '신청 중 오류가 발생했습니다.')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('서버 연결 오류가 발생했습니다.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <div className="p-8">
+          {/* 헤더 */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              2025년 연말 파티
+            </h1>
+            <p className="text-slate-600 text-sm">
+              행사 참여 신청
+            </p>
+          </div>
+
+          {/* 행사 정보 */}
+          <div className="bg-slate-50 rounded-lg p-4 mb-8 space-y-2">
+            <div className="flex items-start gap-3">
+              <span className="text-slate-500 font-medium min-w-fit">📅 날짜:</span>
+              <span className="text-slate-700">2025년 12월 24일</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-slate-500 font-medium min-w-fit">📍 장소:</span>
+              <span className="text-slate-700">강남역 오리엔탈라운지</span>
+            </div>
+          </div>
+
+          {/* 신청 폼 */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* 이름 입력 */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
+                이름 *
+              </label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="이름을 입력해주세요"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+                className="w-full"
+              />
+            </div>
+
+            {/* 휴대폰 번호 입력 */}
+            <div>
+              <label htmlFor="mobile" className="block text-sm font-medium text-slate-700 mb-2">
+                휴대폰 번호 *
+              </label>
+              <Input
+                id="mobile"
+                name="mobile"
+                type="tel"
+                placeholder="010-0000-0000"
+                value={formData.mobile}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+                className="w-full"
+              />
+            </div>
+
+            {/* 이메일 입력 */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                이메일 *
+              </label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="example@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                disabled={isLoading}
+                className="w-full"
+              />
+            </div>
+
+            {/* 제출 버튼 */}
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2 rounded-lg transition-colors"
+            >
+              {isLoading ? '신청 중...' : '신청하기'}
+            </Button>
+          </form>
+
+          {/* 안내 문구 */}
+          <p className="text-xs text-slate-500 text-center mt-6">
+            입력하신 정보는 행사 안내 목적으로만 사용됩니다.
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </Card>
     </div>
-  );
+  )
 }
